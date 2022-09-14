@@ -14,13 +14,13 @@ from comments_and_likes.models import Like,Favorites
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
-from account.permissons import IsAccountOwner
+from account import permissons as per
 from account.send_email import send_notification
 from .serializers import MusicCreateSerializer
 
 
 class StandartResultPagination(PageNumberPagination):
-    page_size = 3
+    page_size = 2
     page_query_param = 'page'
     max_page_size = 1000
 
@@ -39,11 +39,11 @@ class MusicViewSet(ModelViewSet):
 
     def get_permissions(self):
         # Создавать может залогиненный юзер
-        if self.action in ( 'create','add_to_liked', 'remove_from_liked','get_likes', ):
+        if self.action in ('create','add_to_liked', 'remove_from_liked','get_likes',):
             return [permissions.IsAuthenticated()]
         # Изменять и удалять может только исполнитель
-        elif self.action in ('update', 'partial_update', 'destroy', ):
-            return [permissions.IsAdminUser(), IsAccountOwner()]
+        elif self.action in ('update', 'partial_update', 'destroy',):
+            return [per.IsAccountOwner()]
         # Просматривать могут все
         else:
             return [permissions.AllowAny()]
@@ -94,20 +94,13 @@ class MusicViewSet(ModelViewSet):
         return response.Response(serializer.data, status=200)
 
     @action(['POST'], detail=True)
-    def favorite_action(self, request, pk):
+    def favorite(self, request, pk):
         music= self.get_object()
         if request.user.favorites.filter(music=music).exists():
             request.user.favorites.filter(music=music).delete()
             return response.Response('Убрали из избранных', status=204)
         Favorites.objects.create(music=music, owner=request.user)
         return response.Response('Добавлено в избранные!', status=201)
-
-    # @action(['GET'], detail=True)
-    # def top(self,request):
-    #     music = Music.objects.all()
-    #     tops = music.reviews.all()
-    #     serializer = serializers.TopSerializer(tops, many = True)
-    #     return response.Response(serializer, status=200)
 
 
 

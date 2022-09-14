@@ -32,9 +32,9 @@ router.register('category', v.CategoryViewSet)
 
 schema_view = get_schema_view(
    openapi.Info(
-      title="Chaihana Api",
+      title="Spotify",
       default_version='v1',
-      description="Традиции восточного гостеприимства",
+      description="Слушай миллионы треков бесплатно",
       terms_of_service="https://www.google.com/policies/terms/",
       contact=openapi.Contact(email="contact@snippets.local"),
       license=openapi.License(name="BSD License"),

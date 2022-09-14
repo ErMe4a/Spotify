@@ -46,14 +46,3 @@ class MusicCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Music
         fields = '__all__'
-
-# class TopSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Music
-#         fields = ('name', 'rating')
-
-#     def to_representation(self, instance):
-#         repr = super().to_representation(instance)
-#         repr['rating'] = instance.reviews.aggregate(Avg('rating'))['rating__avg']
-        
-#         return repr
